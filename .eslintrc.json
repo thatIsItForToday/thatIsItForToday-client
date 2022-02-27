@@ -1,0 +1,70 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "airbnb",
+    "plugin:react/recommended",
+    "plugin:prettier/recommended",
+    "plugin:cypress/recommended"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["react", "prettier"],
+  "rules": {
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/function-component-definition": "off",
+    "react/prop-types": "off",
+    "react/jsx-props-no-spreading": [
+      1,
+      {
+        "html": "ignore"
+      }
+    ],
+    "react/jsx-key": [0, { "checkFragmentShorthand": true }],
+    "jsx-a11y/control-has-associated-label": [0],
+    "indent": "off",
+    "semi": ["error", "always"],
+    "quotes": ["error", "double"],
+    "no-trailing-spaces": "off",
+    "no-var": "error",
+    "no-unused-vars": "warn",
+    "no-console": "warn",
+    "comma-dangle": "off",
+    "no-shadow": "off",
+    "no-use-before-define": "warn",
+    "no-param-reassign": "off",
+    "react/button-has-type": "off",
+    "consistent-return": "off",
+    "no-underscore-dangle": "off",
+    "no-plusplus": "off",
+    "no-unused-expressions": "off",
+    "cypress/no-unnecessary-waiting": "off",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
+    ],
+    "import/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", ["parent", "sibling"], "index"],
+        "pathGroups": [
+          {
+            "pattern": "react",
+            "group": "external",
+            "position": "before"
+          }
+        ],
+        "newlines-between": "always"
+      }
+    ]
+  }
+}
