@@ -5,7 +5,7 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     font: inherit;
-    font-family: 'Acme', sans-serif;
+    font-family: 'Open Sans', sans-serif, "ABeeZee";
     color: inherit;
   }
 

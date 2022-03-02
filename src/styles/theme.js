@@ -55,10 +55,15 @@ const container = {
     flex-direction: column;
     justify-content: flex-start;
   `,
+  flexStart: `
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  `,
   flexEnd: `
     display: flex;
     justify-content: flex-end;
-    algin-items: center;
+    align-items: center;
   `,
 };
 
