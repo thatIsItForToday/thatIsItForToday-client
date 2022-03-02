@@ -4,7 +4,7 @@ const initialState = {
   user: {
     id: "",
     email: "",
-    nickname: "",
+    displayName: "",
   },
   isLoggedIn: false,
 };

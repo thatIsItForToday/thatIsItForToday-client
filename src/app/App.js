@@ -1,13 +1,23 @@
 import React from "react";
+import { Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "styled-components";
 
+import theme from "../styles/theme";
 import GlobalStyle from "../styles/GlobalStyle";
+import Header from "../components/Header";
+import MainPage from "../components/MainPage";
+import LoginPage from "../components/LoginPage";
 
 const App = () => {
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <GlobalStyle />
-      <div>APP 컴포넌트 입니다.</div>;
-    </>
+      <Header />
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/login" element={<LoginPage />} />
+      </Routes>
+    </ThemeProvider>
   );
 };
 
