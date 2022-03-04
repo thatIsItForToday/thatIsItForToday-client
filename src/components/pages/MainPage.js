@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import mainImage from "../images/main.png";
+import mainImage from "../../images/main.png";
 
 const MainPage = () => {
   return (
@@ -12,7 +12,7 @@ const MainPage = () => {
         <Paragraph>That makes you keep your memory alive.</Paragraph>
       </TextContainer>
       <ImgContainer>
-        <MainImg src={mainImage} alt="mainImage" />
+        <MainImg src={mainImage} alt="mainImage" crossorigin />
       </ImgContainer>
     </Section>
   );

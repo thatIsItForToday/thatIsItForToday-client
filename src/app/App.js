@@ -5,8 +5,9 @@ import { ThemeProvider } from "styled-components";
 import theme from "../styles/theme";
 import GlobalStyle from "../styles/GlobalStyle";
 import Header from "../components/Header";
-import MainPage from "../components/MainPage";
-import LoginPage from "../components/LoginPage";
+import MainPage from "../components/pages/MainPage";
+import LoginPage from "../components/pages/LoginPage";
+import RecorderPage from "../components/pages/RecorderPage";
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/recorder" element={<RecorderPage />} />
       </Routes>
     </ThemeProvider>
   );
