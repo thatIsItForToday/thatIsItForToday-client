@@ -70,6 +70,8 @@
       {
         "endOfLine": "auto"
       }
-    ]
+    ],
+    "no-restricted-globals": "warn",
+    "no-sequences": "off"
   }
 }
