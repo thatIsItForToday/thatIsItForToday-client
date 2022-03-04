@@ -5,11 +5,11 @@ import styled from "styled-components";
 import GoogleButton from "react-google-button";
 import axios from "axios";
 
-import loginImg from "../images/logIn.jpg";
-import signInWithGoogle from "../config/firebase";
-import { RESPONSE } from "../config/constants";
-import { userActions } from "../features/userSlice";
-import Message from "./Common/Message";
+import loginImg from "../../images/logIn.jpg";
+import signInWithGoogle from "../../config/firebase";
+import { RESPONSE } from "../../config/constants";
+import { userActions } from "../../features/userSlice";
+import Message from "../Common/Message";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
