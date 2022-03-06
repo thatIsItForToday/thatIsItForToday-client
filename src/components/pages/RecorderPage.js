@@ -1,13 +1,17 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
-import PropTypes from "prop-types";
 import axios from "axios";
+import ReactHlsPlayer from "react-hls-player/dist";
 
 import Recorder from "../Recorder";
-import { getSignedURL, uploadToAWSS3 } from "../../utils/awsUtils";
+import {
+  getSignedURL,
+  getVideoStreamingURL,
+  uploadToAWSS3,
+} from "../../utils/awsUtils";
 
-const RecorderPage = props => {
+const RecorderPage = () => {
   const { user: currentUser } = useSelector(state => state.user);
   const { recorder } = useSelector(state => state.video);
   const [gif, setGif] = useState("");
@@ -16,10 +20,14 @@ const RecorderPage = props => {
 
   const handleSaveRecordedClick = useCallback(async () => {
     try {
-      const [videoUploadURL, gifUploadURL] = await Promise.all([
+      const [videoUploadData, gifUploadData] = await Promise.all([
         getSignedURL(process.env.REACT_APP_GET_PRESIGNED_VIDEO_UPLOAD_URL),
         getSignedURL(process.env.REACT_APP_GET_PRESIGNED_GIF_UPLOAD_URL),
       ]);
+
+      const { uploadURL: videoUploadURL, Key } = videoUploadData;
+      const { uploadURL: gifUploadURL } = gifUploadData;
+      const videoName = Key.split(".")[0];
 
       await Promise.all([
         uploadToAWSS3(videoUploadURL, videoBlob, "video/mp4"),
@@ -28,6 +36,7 @@ const RecorderPage = props => {
 
       const uploadedURLs = {
         videoURL: videoUploadURL.split("?")[0],
+        videoStreamingURL: getVideoStreamingURL(videoName),
         gifURL: gifUploadURL.split("?")[0],
       };
 
@@ -51,14 +60,21 @@ const RecorderPage = props => {
       {gif && (
         <Container>
           <Gif src={gif} />
-          <button onClick={handleSaveRecordedClick}>저장</button>
+          <Button onClick={handleSaveRecordedClick}>저장</Button>
         </Container>
       )}
+      <ReactHlsPlayer
+        autoPlay={false}
+        controls
+        width="30%"
+        height="auto"
+        crossOrigin="true"
+        src="https://d210c3znxi5wfh.cloudfront.net/assets/347434/HLS/347434.m3u8"
+        // type="application/x-mpegURL"
+      />
     </Section>
   );
 };
-
-RecorderPage.propTypes = {};
 
 const Section = styled.div`
   ${({ theme }) => theme.container.flexCenter};
@@ -80,6 +96,16 @@ const Gif = styled.img`
   height: 420px;
   border-radius: 0.5rem;
   margin: 40px auto;
+`;
+
+const Button = styled.button`
+  width: fit-content;
+  padding: ${({ theme }) => theme.spacing.xl};
+  border-radius: 0.5em;
+  background-color: black;
+  color: white;
+  font-family: sans-serif;
+  text-align: center;
 `;
 
 export default RecorderPage;
