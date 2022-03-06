@@ -3,7 +3,8 @@ import axios from "axios";
 const getSignedURL = async url => {
   try {
     const { data } = await axios.get(url);
-    return data.uploadURL;
+
+    return data;
   } catch (error) {
     console.log(error);
   }
@@ -21,4 +22,8 @@ const uploadToAWSS3 = async (url, blob, type) => {
   }
 };
 
-export { getSignedURL, uploadToAWSS3 };
+const getVideoStreamingURL = key => {
+  return `${process.env.REACT_APP_AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/assets/${key}/HLS/${key}.m3u8`;
+};
+
+export { getSignedURL, uploadToAWSS3, getVideoStreamingURL };
