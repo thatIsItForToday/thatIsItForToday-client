@@ -73,6 +73,7 @@
     ],
     "no-restricted-globals": "warn",
     "no-sequences": "off",
-    "no-bitwise": "warn"
+    "no-bitwise": "warn",
+    "no-return-assign": "off"
   }
 }
