@@ -5,9 +5,8 @@ import styled from "styled-components";
 import GoogleButton from "react-google-button";
 import axios from "axios";
 
-import loginImg from "../../images/logIn.jpg";
 import signInWithGoogle from "../../config/firebase";
-import { RESPONSE } from "../../config/constants";
+import { IMAGE_URL, RESPONSE } from "../../config/constants";
 import { userActions } from "../../features/userSlice";
 import Message from "../Common/Message";
 
@@ -64,7 +63,7 @@ const LoginPage = () => {
   return (
     <Section>
       <Container>
-        <LoginImg src={loginImg} alt="loginImage" />
+        <LoginImg src={IMAGE_URL.LOGIN} alt="loginImage" crossOrigin="true" />
       </Container>
       <Container>
         {message ? <Message message={message} /> : <div />}
