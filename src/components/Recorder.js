@@ -1,23 +1,21 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
 import styled from "styled-components";
 
 import Message from "./Common/Message";
+import { getToday } from "../utils/dateUtils";
 
 const ffmpeg = createFFmpeg({
   log: true,
 });
 
-const Recorder = ({ setGif, setVideoBlob, setGifBlob }) => {
-  const dispatch = useDispatch();
-
+const Recorder = ({ gif, setGif, setVideoBlob, setGifBlob }) => {
   const videoRef = useRef();
   const recordButtonRef = useRef();
   const finishButtonRef = useRef();
 
-  const [ready, setReady] = useState(false);
   const [file, setFile] = useState(null);
+
   const [parts, setParts] = useState([]);
   const [stream, setStream] = useState(null);
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -32,9 +30,8 @@ const Recorder = ({ setGif, setVideoBlob, setGifBlob }) => {
 
       await ffmpeg.load();
     } catch (error) {
-      console.log("ffmpeg 로드 중 에러 발생", error);
+      console.log("ffmpeg 로드 에러", error);
     }
-    setReady(true);
   };
 
   const handleRecordButtonClick = useCallback(() => {
@@ -69,8 +66,8 @@ const Recorder = ({ setGif, setVideoBlob, setGifBlob }) => {
       "2.0",
       "-ss",
       "3.0",
-      "-f",
-      "gif",
+      "-vf",
+      "fps=20,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse",
       "out.gif"
     );
 
@@ -90,19 +87,11 @@ const Recorder = ({ setGif, setVideoBlob, setGifBlob }) => {
 
   useEffect(() => {
     const setRecorderSetting = async () => {
-      // logicam 설정
-      // const list = await navigator.mediaDevices.enumerateDevices();
-
-      // const logiCapture = list.find(
-      //   device => device.label === "Logitech StreamCam (046d:0893)"
-      // );
-
       const userStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: {
-          width: 1280,
-          height: 720,
-          // deviceId: logiCapture.deviceId,
+          width: 1920,
+          height: 1080,
         },
       });
 
@@ -150,10 +139,9 @@ const Recorder = ({ setGif, setVideoBlob, setGifBlob }) => {
   }, [stream, handleRecordButtonClick, handleFinishButtonClick]);
 
   return (
-    <Container>
+    <Container className={gif ? "no-show" : "show"}>
+      <Text>{`${getToday()}`}</Text>
       <Video ref={videoRef} id="video" autoPlay muted />
-      {isRecording && <Message message="🎥 on REC..." />}
-      {isStoping && <Message message="🎬 on saving REC..." />}
       <Button
         ref={finishButtonRef}
         id="finish-button"
@@ -161,13 +149,19 @@ const Recorder = ({ setGif, setVideoBlob, setGifBlob }) => {
       >
         Finish Recording
       </Button>
-      <Button
-        ref={recordButtonRef}
-        id="record-button"
-        style={{ display: isRecording ? "none" : "block" }}
-      >
-        Start Recording
-      </Button>
+      {isRecording && (
+        <Message style={{ color: "red" }} message="🎥 on REC..." />
+      )}
+      {isStoping && <Message message="🎬 on saving REC..." />}
+      {isStoping || (
+        <Button
+          ref={recordButtonRef}
+          id="record-button"
+          style={{ display: isRecording ? "none" : "block" }}
+        >
+          Start Recording
+        </Button>
+      )}
     </Container>
   );
 };
@@ -176,22 +170,53 @@ const Container = styled.div`
   ${({ theme }) => theme.container.flexCenterColumn};
   width: 50%;
   height: 100%;
-  background-color: yellow;
-  transition: all 0.3s ease-out;
+  border: 2px solid #bdbdbd;
+  border-radius: 3em;
+  background-color: #eeeeee;
+
+  transition: all 0.7s ease-out;
+
+  @keyframes appearAnimationRecorder {
+    from {
+      opacity: 0;
+      background-color: black;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      background-color: #eeeeee;
+      transform: translateY(0);
+    }
+  }
+
+  &.show {
+    opacity: 1;
+    animation: appearAnimationRecorder 0.7s ease-in-out;
+  }
+`;
+
+const Text = styled.h2`
+  text-align: center;
+  font-family: "ABeeZee";
+  font-size: ${({ theme }) => theme.fontSizes.xxl};
+  font-weight: 600;
 `;
 
 const Video = styled.video`
-  width: 560px;
-  height: 520px;
+  width: 100%;
+  height: 60%;
+  margin: 2em;
+  border-radius: 2em;
 `;
 
 const Button = styled.button`
   width: fit-content;
   padding: ${({ theme }) => theme.spacing.xl};
-  border-radius: 0.5em;
-  background-color: black;
-  color: white;
-  font-family: sans-serif;
+  border-radius: 1em;
+  background-color: red;
+  color: #eeeeee;
+  font-family: "ABeeZee";
+  font-weight: 500;
   text-align: center;
 `;
 
