@@ -127,7 +127,7 @@ const HeaderContainer = styled.div`
   ${({ theme }) => theme.container.flexSpaceBetween};
   width: 100vw;
   height: 10vh;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.blue};
+  border-bottom: 2px solid #eeeeee;
 `;
 
 const ButtonContainer = styled.div`
@@ -168,7 +168,7 @@ const NavButton = styled.button`
   padding: 16px ${({ theme }) => theme.spacing.xxxl};
   margin: ${({ theme }) => theme.spacing.xxl};
   border-radius: 0.5rem;
-  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   background-color: ${({ theme }) => theme.colors.lightBlue};
   color: ${({ theme }) => theme.colors.white};
   font-size: ${({ theme }) => theme.fontSizes.base};

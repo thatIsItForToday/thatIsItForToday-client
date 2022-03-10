@@ -14,7 +14,8 @@ const GlobalStyle = createGlobalStyle`
     flex-shrink: 0;
   }
 
-  :root {-webkit-tap-highlight-color: transparent;
+  :root {
+    -webkit-tap-highlight-color: transparent;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     cursor: default;
@@ -24,10 +25,13 @@ const GlobalStyle = createGlobalStyle`
   }
 
   html, body {
+    scroll-behavior: smooth;
     height: 100%;
   }
 
   body {
+    width: 100vw;
+    height: 100vh;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
