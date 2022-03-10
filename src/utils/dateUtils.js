@@ -8,4 +8,8 @@ const getToday = () => {
   return format(parseISO(ISO), "PPP", { locale: enUS });
 };
 
-export { getToday };
+const getRecordedDate = date => {
+  return format(date, "PPP", { locale: enUS });
+};
+
+export { getToday, getRecordedDate };
