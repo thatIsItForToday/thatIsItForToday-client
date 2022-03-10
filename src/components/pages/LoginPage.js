@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -13,6 +13,9 @@ import Message from "../Common/Message";
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const imageRef = useRef();
+
   const [message, setMessage] = useState();
 
   const handleLoginClick = async () => {
@@ -60,10 +63,27 @@ const LoginPage = () => {
     navigate("/");
   };
 
+  // 이미지 애니메이션 추가 예정
+  // useEffect(() => {
+  //   let toggle = false;
+
+  //   const intervalId = setInterval(() => {
+  //     const isHeadingUp = toggle ? false : true;
+  //   }, 800);
+  //   const requestloginImageAnimation = () => {
+  //     imageRef;
+  //   };
+  // }, []);
+
   return (
     <Section>
       <Container>
-        <LoginImg src={IMAGE_URL.LOGIN} alt="loginImage" crossOrigin="true" />
+        <LoginImg
+          ref={imageRef}
+          src={IMAGE_URL.LOGIN}
+          alt="loginImage"
+          crossOrigin="true"
+        />
       </Container>
       <Container>
         {message ? <Message message={message} /> : <div />}

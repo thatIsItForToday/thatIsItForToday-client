@@ -52,7 +52,6 @@ const RecorderPage = () => {
 
       setIsUploading(false);
       setIsUploadSuccess(true);
-      console.log("여기까지 오나");
     } catch (error) {
       console.log(error);
     }
