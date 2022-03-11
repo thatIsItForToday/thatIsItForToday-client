@@ -43,7 +43,10 @@ if (typeof window === "undefined") {
           // newHeaders.set("Cross-Origin-Resource-Policy", "cross-origin");
 
           newHeaders.set("Cross-Origin-Embedder-Policy", "require-corp");
-          newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
+          newHeaders.set(
+            "Cross-Origin-Opener-Policy",
+            "same-origin-allow-popups"
+          );
           newHeaders.set("Cross-Origin-Resource-Policy", "cross-origin");
 
           return new Response(response.body, {
