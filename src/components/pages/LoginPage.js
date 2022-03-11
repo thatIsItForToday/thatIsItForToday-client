@@ -3,8 +3,8 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import GoogleButton from "react-google-button";
-import axios from "axios";
 
+import axios from "../../config/axiosInstance";
 import signInWithGoogle from "../../config/firebase";
 import { IMAGE_URL, RESPONSE } from "../../config/constants";
 import { userActions } from "../../features/userSlice";
@@ -21,20 +21,14 @@ const LoginPage = () => {
   const handleLoginClick = async () => {
     const userInfo = await signInWithGoogle();
 
-    const { data } = await axios.post(
-      `${process.env.REACT_APP_BASE_API_URL}/auth/login`,
-      {
-        email: userInfo.email,
-      }
-    );
+    const { data } = await axios.post("/auth/login", {
+      email: userInfo.email,
+    });
 
     if (data.result === RESPONSE.USER_DOES_NOT_EXIST) {
-      const { data: signUpResult } = await axios.post(
-        `${process.env.REACT_APP_BASE_API_URL}/auth/signup`,
-        {
-          userInfo,
-        }
-      );
+      const { data: signUpResult } = await axios.post("/auth/signup", {
+        userInfo,
+      });
 
       if (signUpResult.error) {
         setMessage("에러가 발생했습니다.");

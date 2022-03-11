@@ -1,9 +1,8 @@
 import React, { useCallback, useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
-import axios from "axios";
 
-import Recorder from "../Recorder";
+import axios from "../../config/axiosInstance";
 import {
   getSignedURL,
   getVideoStreamingURL,
@@ -11,6 +10,7 @@ import {
 } from "../../utils/awsUtils";
 import { getToday } from "../../utils/dateUtils";
 import Message from "../Common/Message";
+import Recorder from "../Recorder";
 
 const RecorderPage = () => {
   const { user: currentUser } = useSelector(state => state.user);
@@ -45,10 +45,7 @@ const RecorderPage = () => {
         gifURL: gifUploadURL.split("?")[0],
       };
 
-      await axios.post(
-        `${process.env.REACT_APP_BASE_API_URL}/users/${currentUser.id}/video`,
-        uploadedURLs
-      );
+      await axios.post(`/users/${currentUser.id}/video`, uploadedURLs);
 
       setIsUploading(false);
       setIsUploadSuccess(true);
