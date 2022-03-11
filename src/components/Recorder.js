@@ -14,7 +14,7 @@ const Recorder = ({ gif, setGif, setVideoBlob, setGifBlob }) => {
   const recordButtonRef = useRef();
   const finishButtonRef = useRef();
 
-  const [file, setFile] = useState(null);
+  // const [file, setFile] = useState(null);
 
   const [parts, setParts] = useState([]);
   const [stream, setStream] = useState(null);
@@ -77,7 +77,7 @@ const Recorder = ({ gif, setGif, setVideoBlob, setGifBlob }) => {
     const gifURL = URL.createObjectURL(gifBlob);
 
     setGif(gifURL);
-    setFile(newVideo);
+    // setFile(newVideo);
     setVideoBlob(videoBlob);
     setGifBlob(gifBlob);
     setParts([]);
