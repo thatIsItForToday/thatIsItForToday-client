@@ -12,11 +12,14 @@ const Header = () => {
   const user = useSelector(state => state.user);
 
   const getAutoLogin = useCallback(async () => {
-    const { data } = await axios.get("http://localhost:8000/api/auth/login", {
-      headers: {
-        authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    });
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_BASE_API_URL}/auth/login`,
+      {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
+    );
 
     if (data.isInvalidToken) {
       return true;
@@ -36,7 +39,7 @@ const Header = () => {
 
   const postNewAccessToken = useCallback(async () => {
     const { data } = await axios.post(
-      "http://localhost:8000/api/auth/token",
+      `${process.env.REACT_APP_BASE_API_URL}/auth/token`,
       {},
       {
         headers: {
