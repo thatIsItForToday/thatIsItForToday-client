@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import axios from "axios";
 
+import axios from "../../config/axiosInstance";
 import { videoActions } from "../../features/videoSlice";
 import { IMAGE_URL } from "../../config/constants";
 import CanvasContainer from "../Three/CanvasContainer";
@@ -39,9 +39,7 @@ const MyVideosPage = () => {
       return;
     }
 
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_BASE_API_URL}/users/${user.id}/videos`
-    );
+    const { data } = await axios.get(`/users/${user.id}/videos`);
 
     if (data.videos) {
       const { videos } = data;

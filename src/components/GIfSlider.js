@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { parseISO } from "date-fns";
 import styled from "styled-components";
-import axios from "axios";
 
+import axios from "../config/axiosInstance";
 import { videoActions } from "../features/videoSlice";
 import { getRecordedDate } from "../utils/dateUtils";
 import Description from "./Description";
@@ -72,9 +72,7 @@ const GifSlider = () => {
   }, []);
 
   useEffect(async () => {
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_BASE_API_URL}/users/${user.id}/videos`
-    );
+    const { data } = await axios.get(`/users/${user.id}/videos`);
 
     const payload = {
       videos: data.videos,

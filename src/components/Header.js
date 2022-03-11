@@ -2,8 +2,8 @@ import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import axios from "axios";
 
+import axios from "../config/axiosInstance";
 import { userActions } from "../features/userSlice";
 
 const Header = () => {
@@ -12,14 +12,11 @@ const Header = () => {
   const user = useSelector(state => state.user);
 
   const getAutoLogin = useCallback(async () => {
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_BASE_API_URL}/auth/login`,
-      {
-        headers: {
-          authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      }
-    );
+    const { data } = await axios.get("/auth/login", {
+      headers: {
+        authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
 
     if (data.isInvalidToken) {
       return true;
@@ -39,7 +36,7 @@ const Header = () => {
 
   const postNewAccessToken = useCallback(async () => {
     const { data } = await axios.post(
-      `${process.env.REACT_APP_BASE_API_URL}/auth/token`,
+      "/auth/token",
       {},
       {
         headers: {
@@ -74,12 +71,9 @@ const Header = () => {
   };
 
   const handleLogoutButtonClick = async () => {
-    const { data } = await axios.put(
-      `${process.env.REACT_APP_BASE_API_URL}/auth/logout`,
-      {
-        email: user.email,
-      }
-    );
+    const { data } = await axios.put("/auth/logout", {
+      email: user.email,
+    });
 
     if (data.result === "ok") {
       dispatch(userActions.deleteUser());
