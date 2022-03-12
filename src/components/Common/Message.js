@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
-const Message = ({ message }) => {
+const Message = ({ message, isRecording }) => {
   const ref = useRef();
 
   useEffect(() => {
@@ -18,14 +18,23 @@ const Message = ({ message }) => {
   }, []);
 
   return (
-    <MessageContainer id="message" ref={ref}>
+    <MessageContainer
+      style={{ color: isRecording ? "red" : "black" }}
+      id="message"
+      ref={ref}
+    >
       {message}
     </MessageContainer>
   );
 };
 
+Message.defaultProps = {
+  isRecording: false,
+};
+
 Message.propTypes = {
   message: PropTypes.string.isRequired,
+  isRecording: PropTypes.bool,
 };
 
 const MessageContainer = styled.div`
