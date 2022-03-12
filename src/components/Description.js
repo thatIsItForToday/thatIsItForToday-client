@@ -10,7 +10,9 @@ const Description = ({ date }) => {
   );
 };
 
-Description.propTypes = {};
+Description.propTypes = {
+  date: PropTypes.string.isRequired,
+};
 
 const Container = styled.div`
   ${({ theme }) => theme.container.flexCenterColumn}

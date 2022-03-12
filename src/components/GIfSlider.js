@@ -9,7 +9,7 @@ import { videoActions } from "../features/videoSlice";
 import { getRecordedDate } from "../utils/dateUtils";
 import Description from "./Description";
 
-const GifSlider = () => {
+const GifSlider = ({ videos }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -32,7 +32,7 @@ const GifSlider = () => {
 
       navigate(`${user.id}/${clickedVideo._id}`);
     },
-    [videosByDate]
+    [videosByDate, videos]
   );
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const GifSlider = () => {
     const objs = Array(videosByDate.length).fill({ distance: 0 });
 
     const requestAnimationFrame = () => {
-      const gifCards = [...document.querySelectorAll(".card")];
+      const $gifCards = [...document.querySelectorAll(".card")];
 
       position += speed;
       speed *= 0.8;
@@ -55,7 +55,7 @@ const GifSlider = () => {
         obj.distance = Math.min(abs, 1);
         obj.distance = 1 - obj.distance ** 2;
 
-        gifCards[i].style.transform = `scale(${1 + 0.5 * obj.distance})`;
+        $gifCards[i].style.transform = `scale(${1 + 0.5 * obj.distance})`;
       });
 
       rounded = Math.round(position);

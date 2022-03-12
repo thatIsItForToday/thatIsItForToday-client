@@ -12,7 +12,7 @@ const LoadingScreen = ({ onEnd }) => {
       loadingScreenRef.current.classList.remove("loadingStart");
       loadingScreenRef.current.classList.add("loadingEnd");
       onEnd(true);
-    }, 3800);
+    }, 3700);
 
     return () => {
       clearTimeout(timeoutId);
@@ -72,7 +72,7 @@ const Screen = styled.div`
   }
 
   &.loadingEnd {
-    z-index: -5000;
+    display: none;
   }
 `;
 

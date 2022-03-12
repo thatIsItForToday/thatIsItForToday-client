@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
 import GoogleButton from "react-google-button";
+import styled from "styled-components";
 
 import axios from "../../config/axiosInstance";
 import signInWithGoogle from "../../config/firebase";
@@ -56,18 +56,6 @@ const LoginPage = () => {
     dispatch(userActions.updateUser(currentUser));
     navigate("/");
   };
-
-  // 이미지 애니메이션 추가 예정
-  // useEffect(() => {
-  //   let toggle = false;
-
-  //   const intervalId = setInterval(() => {
-  //     const isHeadingUp = toggle ? false : true;
-  //   }, 800);
-  //   const requestloginImageAnimation = () => {
-  //     imageRef;
-  //   };
-  // }, []);
 
   return (
     <Section>
