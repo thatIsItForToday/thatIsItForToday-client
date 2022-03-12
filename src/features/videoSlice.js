@@ -4,12 +4,8 @@ const initialState = {
   videosByDate: [],
   currentVideo: {},
   recorder: {
-    currentFile: {},
-    currentGifURL: "",
-    isRecording: false,
+    runTime: "",
   },
-  meshes: [],
-  func: null,
 };
 
 const videoSlice = createSlice({
@@ -26,23 +22,13 @@ const videoSlice = createSlice({
 
       return state;
     },
-    updateRecordedVideo: (state, action) => {
+    updateRecorder: (state, action) => {
       state.recorder = action.payload;
 
       return state;
     },
     resetRecorder: (state, action) => {
       state.recorder = initialState.recorder;
-
-      return state;
-    },
-    setMeshes: (state, action) => {
-      state.meshes = action.payload.meshes;
-
-      return state;
-    },
-    setFunction: (state, action) => {
-      state.func = action.payload.func;
 
       return state;
     },
