@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { parseISO } from "date-fns";
 import styled from "styled-components";
 
+import axios from "../../config/axiosInstance";
 import { getRecordedDate } from "../../utils/dateUtils";
 import { videoActions } from "../../features/videoSlice";
 import thumbnail from "../../images/thumbnail.jpg";
@@ -10,10 +12,27 @@ import VideoPlayer from "../VideoPlayer";
 
 const VideoDetailPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  const { user } = useSelector(state => state.user);
   const { videosByDate, currentVideo } = useSelector(state => state.video);
 
+  const [gifDownloadURL, setGifDownloadURL] = useState(null);
+  const [videoDownloadURL, setVideoDownloadURL] = useState(null);
+
   const date = parseISO(currentVideo.createdAt);
+
+  const handleBackButtonClick = () => {
+    navigate("/my-videos");
+  };
+
+  const handleDeleteButtonClick = async () => {
+    try {
+      await axios.delete(`/users/${user.id}/videos/${currentVideo._id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleVideoItemClick = event => {
     const clickedVideo = videosByDate.find(
@@ -24,12 +43,72 @@ const VideoDetailPage = () => {
     dispatch(videoActions.updateCurrentVideo(payload));
   };
 
+  const handleGifDownloadButtonClick = useCallback(() => {
+    if (!gifDownloadURL) {
+      return;
+    }
+
+    const link = document.createElement("a");
+
+    link.href = gifDownloadURL;
+    link.setAttribute("download", "image.gif");
+    document.body.appendChild(link);
+    link.click();
+  }, [gifDownloadURL]);
+
+  const handleVideoDownloadButtonClick = useCallback(() => {
+    if (!videoDownloadURL) {
+      return;
+    }
+
+    const link = document.createElement("a");
+
+    link.href = videoDownloadURL;
+    link.setAttribute("download", "video.mp4");
+    document.body.appendChild(link);
+    link.click();
+  }, [videoDownloadURL]);
+
+  useEffect(async () => {
+    try {
+      const [gifResponse, videoResponse] = await Promise.all([
+        fetch(currentVideo.gifURL),
+        fetch(currentVideo.videoURL),
+      ]);
+
+      const [gifBlob, videoBlob] = await Promise.all([
+        gifResponse.blob(),
+        videoResponse.blob(),
+      ]);
+
+      const gifURL = window.URL.createObjectURL(gifBlob);
+      const videoURL = window.URL.createObjectURL(videoBlob);
+
+      setGifDownloadURL(gifURL);
+      setVideoDownloadURL(videoURL);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [currentVideo]);
+
   return (
     <Section>
       <Container>
         <VideoPlayer video={currentVideo} />
         <Text>{`Memory on ${getRecordedDate(date)}`}</Text>
-        <Button>Back to Slider</Button>
+        <ButtonBox>
+          <Button
+            style={{ backgroundColor: "red" }}
+            onClick={handleDeleteButtonClick}
+          >
+            Delete
+          </Button>
+          <Button onClick={handleGifDownloadButtonClick}>Gif Download</Button>
+          <Button onClick={handleVideoDownloadButtonClick}>
+            Video Download
+          </Button>
+          <Button onClick={handleBackButtonClick}>Back to Slider</Button>
+        </ButtonBox>
       </Container>
       <RightSideContainer>
         {videosByDate.length &&
@@ -133,10 +212,17 @@ const Text = styled.h2`
   font-weight: 700;
 `;
 
+const ButtonBox = styled.div`
+  ${({ theme }) => theme.container.flexSpaceBetween};
+  width: 50%;
+  margin-top: 2%;
+`;
+
 const Button = styled.button`
   width: fit-content;
   padding: ${({ theme }) => theme.spacing.base};
   margin-top: 2%;
+  margin-left: 3%;
   border-radius: 1em;
   background-color: black;
   color: #eeeeee;
@@ -146,6 +232,7 @@ const Button = styled.button`
 
   &:hover {
     cursor: pointer;
+    transform: scale(1.02);
   }
 `;
 
