@@ -4,17 +4,17 @@ import styled from "styled-components";
 
 import Message from "./Common/Message";
 import { getToday } from "../utils/dateUtils";
+import { IMAGE_URL } from "../config/constants";
+import RuntimeTracker from "./RuntimeTracker";
 
 const ffmpeg = createFFmpeg({
   log: true,
 });
 
-const Recorder = ({ gif, setGif, setVideoBlob, setGifBlob }) => {
+const Recorder = ({ setGif, setVideoBlob, setGifBlob }) => {
   const videoRef = useRef();
   const recordButtonRef = useRef();
   const finishButtonRef = useRef();
-
-  // const [file, setFile] = useState(null);
 
   const [parts, setParts] = useState([]);
   const [stream, setStream] = useState(null);
@@ -36,6 +36,7 @@ const Recorder = ({ gif, setGif, setVideoBlob, setGifBlob }) => {
 
   const handleRecordButtonClick = useCallback(() => {
     setMediaRecorder(new MediaRecorder(stream));
+
     setIsRecording(true);
   }, [stream]);
 
@@ -77,7 +78,6 @@ const Recorder = ({ gif, setGif, setVideoBlob, setGifBlob }) => {
     const gifURL = URL.createObjectURL(gifBlob);
 
     setGif(gifURL);
-    // setFile(newVideo);
     setVideoBlob(videoBlob);
     setGifBlob(gifBlob);
     setParts([]);
@@ -139,28 +139,39 @@ const Recorder = ({ gif, setGif, setVideoBlob, setGifBlob }) => {
   }, [stream, handleRecordButtonClick, handleFinishButtonClick]);
 
   return (
-    <Container className={gif ? "no-show" : "show"}>
-      <Text>{`${getToday()}`}</Text>
-      <Video ref={videoRef} id="video" autoPlay muted />
+    <Container>
+      {isStoping ? (
+        <>
+          <LoadingIndicator
+            src={IMAGE_URL.LOADING_INDICATOR}
+            crossOrigin="true"
+            alt="loadingIndicator"
+          />
+          <Message message="🎬 converting to gif..." />
+        </>
+      ) : (
+        <>
+          <Text>{`${getToday()}`}</Text>
+          <Video ref={videoRef} id="video" autoPlay muted />
+          <Button
+            ref={recordButtonRef}
+            style={{ display: isRecording ? "none" : "block" }}
+          >
+            Start Recording
+          </Button>
+        </>
+      )}
       <Button
         ref={finishButtonRef}
-        id="finish-button"
         style={{ display: isRecording ? "block" : "none" }}
       >
         Finish Recording
       </Button>
       {isRecording && (
-        <Message style={{ color: "red" }} message="🎥 on REC..." />
-      )}
-      {isStoping && <Message message="🎬 on saving REC..." />}
-      {isStoping || (
-        <Button
-          ref={recordButtonRef}
-          id="record-button"
-          style={{ display: isRecording ? "none" : "block" }}
-        >
-          Start Recording
-        </Button>
+        <TextBox>
+          <Message isRecording={isRecording} message="🎥 on REC..." />
+          <RuntimeTracker />
+        </TextBox>
       )}
     </Container>
   );
@@ -195,6 +206,10 @@ const Container = styled.div`
   }
 `;
 
+const TextBox = styled.div`
+  ${({ theme }) => theme.container.flexCenter};
+`;
+
 const Text = styled.h2`
   text-align: center;
   font-family: "ABeeZee";
@@ -207,6 +222,11 @@ const Video = styled.video`
   height: 60%;
   margin: 2em;
   border-radius: 2em;
+`;
+
+const LoadingIndicator = styled.img`
+  width: "4em";
+  height: "4em";
 `;
 
 const Button = styled.button`

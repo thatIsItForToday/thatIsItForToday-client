@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
@@ -8,31 +8,33 @@ import { IMAGE_URL } from "../../config/constants";
 import CanvasContainer from "../Three/CanvasContainer";
 import Dimension from "../Three/Dimension";
 import GifSlider from "../GIfSlider";
+import LoadingScreen from "../Common/LoadingScreen";
 
 const MyVideosPage = () => {
   const dispatch = useDispatch();
 
-  // const loadingScreenRef = useRef();
   const instructionRef = useRef();
 
   const { user, isLoggedIn } = useSelector(state => state.user);
-  // const [isLoadingScreenOn, setIsLoadingScreenOn] = useState(true);
+  const { videosByDate } = useSelector(state => state.video);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setIsLoadingScreenOn(false);
-  //   }, 1200);
-  // }, []);
+  const [isLoadingEnd, setIsLoadingEnd] = useState(false);
 
   useEffect(() => {
+    if (!isLoadingEnd) {
+      return;
+    }
+
+    instructionRef.current.classList.add("show");
+
     const timeoutId = setTimeout(() => {
       instructionRef.current.classList.add("no-show");
-    }, 1500);
+    }, 2500);
 
     return () => {
       clearTimeout(timeoutId);
     };
-  }, []);
+  }, [isLoadingEnd]);
 
   useEffect(async () => {
     if (!isLoggedIn) {
@@ -50,22 +52,21 @@ const MyVideosPage = () => {
 
   return (
     <Section>
-      {/* {isLoadingScreenOn && <LoadingScreen ref={loadingScreenRef} />} */}
+      <LoadingScreen onEnd={setIsLoadingEnd} />
       <Container>
-        <InstructionBox ref={instructionRef}>
-          <Img
-            src={IMAGE_URL.MOUSE_SCROLL}
-            alt="instruction"
-            crossOrigin="true"
-          />
-          <Text>scroll to moving images</Text>
-        </InstructionBox>
-        {/* <RowTop> */}
-        {/* </RowTop> */}
-
-        <RowBottom>
-          <GifSlider />
-        </RowBottom>
+        {isLoadingEnd && (
+          <InstructionBox ref={instructionRef}>
+            <Img
+              src={IMAGE_URL.MOUSE_SCROLL}
+              alt="instruction"
+              crossOrigin="true"
+            />
+            <Text>scroll to find your memory</Text>
+          </InstructionBox>
+        )}
+        <GifContainer>
+          <GifSlider videos={videosByDate} />
+        </GifContainer>
       </Container>
       <CanvasContainer>
         <Dimension />
@@ -85,12 +86,6 @@ const Section = styled.div`
   background-color: rgba(255, 255, 255, 0.2);
 `;
 
-const Title = styled.h1`
-  color: white;
-  font-family: "ABeeZee";
-  font-weight: 700;
-`;
-
 const Container = styled.div`
   ${({ theme }) => theme.container.flexCenter};
   flex-wrap: wrap;
@@ -99,20 +94,13 @@ const Container = styled.div`
   padding: ${({ theme }) => theme.spacing.base};
 `;
 
-const RowTop = styled.div`
-  ${({ theme }) => theme.container.flexCenter};
-  width: 100%;
-  height: 20%;
-  margin: 1rem;
-  overflow-x: hidden;
-`;
-
-const RowBottom = styled(RowTop)`
+const GifContainer = styled.div`
   ${({ theme }) => theme.container.flexStart};
+  width: 100%;
   height: 100%;
   z-index: 1000;
-  background-color: "green";
-  overflow-y: hidden;
+  margin: 1rem;
+  overflow: hidden;
 `;
 
 const InstructionBox = styled.div`
@@ -124,11 +112,40 @@ const InstructionBox = styled.div`
   height: 40%;
   border-radius: 1rem;
   background-color: white;
-  opacity: 0.4;
-  transition: all 0.3s ease-in-out;
+  opacity: 0;
+  transition: all 0.6s ease-in-out;
+
+  &.show {
+    opacity: 0.4;
+    animation: appearSrollInstruction 0.6s ease-in-out;
+  }
 
   &.no-show {
-    display: none;
+    opacity: 0;
+    animation: dissappearSrollInstruction 0.6s ease-in-out;
+    z-index: -100;
+  }
+
+  @keyframes appearSrollInstruction {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 0.4;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes dissappearSrollInstruction {
+    from {
+      opacity: 0.4;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(20px);
+    }
   }
 `;
 
@@ -145,13 +162,4 @@ const Text = styled.h2`
   font-weight: 700;
 `;
 
-const LoadingScreen = styled.div`
-  position: fixed;
-  top: 10vh;
-  left: 0;
-  z-index: 10000;
-  width: 100vw;
-  height: 100vh;
-  background-color: beige;
-`;
 export default MyVideosPage;

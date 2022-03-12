@@ -1,10 +1,12 @@
 import React, { useCallback, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
 import axios from "../../config/axiosInstance";
+import { videoActions } from "../../features/videoSlice";
 import {
   getSignedURL,
+  getThumbnailURL,
   getVideoStreamingURL,
   uploadToAWSS3,
 } from "../../utils/awsUtils";
@@ -13,7 +15,10 @@ import Message from "../Common/Message";
 import Recorder from "../Recorder";
 
 const RecorderPage = () => {
+  const dispatch = useDispatch();
+
   const { user: currentUser } = useSelector(state => state.user);
+  const { recorder } = useSelector(state => state.video);
 
   const [gif, setGif] = useState("");
   const [videoBlob, setVideoBlob] = useState("");
@@ -40,15 +45,18 @@ const RecorderPage = () => {
       ]);
 
       const uploadedURLs = {
+        gifURL: gifUploadURL.split("?")[0],
         videoURL: videoUploadURL.split("?")[0],
         videoStreamingURL: getVideoStreamingURL(videoName),
-        gifURL: gifUploadURL.split("?")[0],
+        thumbnailURL: getThumbnailURL(videoName),
+        runTime: recorder.runTime,
       };
 
       await axios.post(`/users/${currentUser.id}/video`, uploadedURLs);
 
       setIsUploading(false);
       setIsUploadSuccess(true);
+      dispatch(videoActions.resetRecorder());
     } catch (error) {
       console.log(error);
     }
@@ -81,7 +89,6 @@ const RecorderPage = () => {
         </Container>
       ) : (
         <Recorder
-          gif={gif}
           setGif={setGif}
           setVideoBlob={setVideoBlob}
           setGifBlob={setGifBlob}
@@ -108,7 +115,12 @@ const Container = styled.div`
   opacity: 0;
   transition: all 0.7s ease-out;
 
-  @keyframes appearAnimationGif {
+  &.show {
+    opacity: 1;
+    animation: appearGif 0.7s ease-in-out;
+  }
+
+  @keyframes appearGif {
     from {
       opacity: 0;
       background-color: black;
@@ -119,11 +131,6 @@ const Container = styled.div`
       transform: translateY(0);
       background-color: #bdbdbd;
     }
-  }
-
-  &.show {
-    opacity: 1;
-    animation: appearAnimationGif 0.7s ease-in-out;
   }
 `;
 

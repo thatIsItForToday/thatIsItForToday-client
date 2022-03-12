@@ -26,4 +26,8 @@ const getVideoStreamingURL = key => {
   return `${process.env.REACT_APP_AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/assets/${key}/HLS/${key}.m3u8`;
 };
 
-export { getSignedURL, uploadToAWSS3, getVideoStreamingURL };
+const getThumbnailURL = key => {
+  return `${process.env.REACT_APP_AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN_NAME}/assets/${key}/Thumbnails/${key}.0000000.jpg`;
+};
+
+export { getSignedURL, uploadToAWSS3, getVideoStreamingURL, getThumbnailURL };
