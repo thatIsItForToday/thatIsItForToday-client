@@ -59,6 +59,10 @@ const Header = () => {
     navigate(`/${path}`);
   };
 
+  const handleLogInButtonClick = async () => {
+    window.location = process.env.REACT_APP_FIREBASE_LOGIN_BYPASS;
+  };
+
   const handleNavButtonClick = event => {
     const path = event.currentTarget.id;
 
@@ -110,7 +114,7 @@ const Header = () => {
           {user.isLoggedIn ? (
             <SignButton onClick={handleLogoutButtonClick}>Log out</SignButton>
           ) : (
-            <SignButton id="login" onClick={handleButtonClick}>
+            <SignButton id="login" onClick={handleLogInButtonClick}>
               Log in
             </SignButton>
           )}
