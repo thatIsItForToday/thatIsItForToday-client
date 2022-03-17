@@ -7,7 +7,6 @@ import styled from "styled-components";
 import axios from "../../config/axiosInstance";
 import { getRecordedDate } from "../../utils/dateUtils";
 import { videoActions } from "../../features/videoSlice";
-import thumbnail from "../../images/thumbnail.jpg";
 import VideoPlayer from "../VideoPlayer";
 
 const VideoDetailPage = () => {
@@ -22,13 +21,32 @@ const VideoDetailPage = () => {
 
   const date = parseISO(currentVideo.createdAt);
 
-  const handleBackButtonClick = () => {
+  const handleBackToScrollButtonClick = () => {
     navigate("/my-videos");
   };
 
   const handleDeleteButtonClick = async () => {
     try {
-      await axios.delete(`/users/${user.id}/videos/${currentVideo._id}`);
+      const { data } = await axios.delete(
+        `/users/${user.id}/videos/${currentVideo._id}`
+      );
+
+      if (data.result === "ok") {
+        const { data } = await axios.get(`/users/${user.id}/videos`);
+
+        if (data.videos) {
+          const { videos } = data;
+          const payload = {
+            video: videos[videos.length - 1],
+          };
+
+          dispatch(videoActions.setVideos({ videos }));
+          dispatch(videoActions.updateCurrentVideo(payload));
+          navigate(
+            `/my-videos/${user.id}/detail/${videos[videos.length - 1]._id}`
+          );
+        }
+      }
     } catch (error) {
       console.log(error);
     }
@@ -41,6 +59,7 @@ const VideoDetailPage = () => {
     const payload = { video: clickedVideo };
 
     dispatch(videoActions.updateCurrentVideo(payload));
+    navigate(`/my-videos/${user.id}/detail/${clickedVideo._id}`);
   };
 
   const handleGifDownloadButtonClick = useCallback(() => {
@@ -107,12 +126,14 @@ const VideoDetailPage = () => {
           <Button onClick={handleVideoDownloadButtonClick}>
             Video Download
           </Button>
-          <Button onClick={handleBackButtonClick}>Back to Slider</Button>
+          <Button onClick={handleBackToScrollButtonClick}>
+            Back to Scroll
+          </Button>
         </ButtonBox>
       </Container>
       <RightSideContainer>
         {videosByDate.length &&
-          videosByDate.map((video, i) => {
+          videosByDate.map(video => {
             const date = parseISO(video.createdAt);
 
             return (
@@ -122,11 +143,15 @@ const VideoDetailPage = () => {
                 onClick={handleVideoItemClick}
               >
                 <ImgBox>
-                  <Img src={thumbnail} alt="thumb" />
+                  <Img
+                    src={video.thumbnailURL}
+                    alt="thumb"
+                    crossOrigin="true"
+                  />
                 </ImgBox>
                 <DescriptionBox>
                   <Description>{getRecordedDate(date)}</Description>
-                  <Description>{`#${i + 1} memory`}</Description>
+                  <Description>{video.runTime}</Description>
                 </DescriptionBox>
               </VideoItemContainer>
             );
@@ -141,9 +166,7 @@ const Section = styled.div`
   width: 100vw;
   height: 90vh;
   padding: ${({ theme }) => theme.spacing.xxxl};
-  background-color: #bdbdbd;
-
-  /* background-color: #eeeeee; */
+  background-color: #eeeeee;
 `;
 
 const Container = styled.div`
@@ -160,8 +183,20 @@ const RightSideContainer = styled.div`
   ${({ theme }) => theme.container.flexStartColumn};
   width: 28%;
   height: 100%;
-  padding: 0 1%;
+  padding: 0.5% 1%;
+  background-color: #eeeeee;
   overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-thumb {
+    height: 17%;
+    background-color: rgba(33, 133, 133, 1);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: rgba(33, 133, 133, 0.33);
+  }
 `;
 
 const VideoItemContainer = styled.div`
@@ -170,7 +205,7 @@ const VideoItemContainer = styled.div`
   transition: all 0.01s ease-in-out;
 
   &:hover {
-    background-color: #eeeeee;
+    background-color: white;
     cursor: pointer;
     transform: scale(1.02);
   }
@@ -190,7 +225,7 @@ const Img = styled.img`
 const DescriptionBox = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: flex-start;
   width: 60%;
   height: 100%;

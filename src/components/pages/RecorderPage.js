@@ -17,7 +17,7 @@ import Recorder from "../Recorder";
 const RecorderPage = () => {
   const dispatch = useDispatch();
 
-  const { user: currentUser } = useSelector(state => state.user);
+  const { user } = useSelector(state => state.user);
   const { recorder } = useSelector(state => state.video);
 
   const [gif, setGif] = useState("");
@@ -52,7 +52,15 @@ const RecorderPage = () => {
         runTime: recorder.runTime,
       };
 
-      await axios.post(`/users/${currentUser.id}/video`, uploadedURLs);
+      await axios.post(`/users/${user.id}/video`, uploadedURLs);
+
+      const { data } = await axios.get(`/users/${user.id}/videos`);
+
+      if (data.videos) {
+        const { videos } = data;
+
+        dispatch(videoActions.setVideos({ videos }));
+      }
 
       setIsUploading(false);
       setIsUploadSuccess(true);

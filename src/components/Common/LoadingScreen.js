@@ -1,9 +1,12 @@
 import React, { useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 
 const LoadingScreen = ({ onEnd }) => {
   const loadingScreenRef = useRef();
   const loadingTextRef = useRef();
+
+  const { videosByDate } = useSelector(state => state.video);
 
   useEffect(() => {
     loadingScreenRef.current.classList.add("loadingStart");
@@ -33,7 +36,11 @@ const LoadingScreen = ({ onEnd }) => {
   return (
     <Screen ref={loadingScreenRef}>
       <TextContainer>
-        <LoadingText ref={loadingTextRef}>That is it for today!</LoadingText>
+        <LoadingText ref={loadingTextRef}>
+          {videosByDate.length
+            ? `You have ${videosByDate.length} memories.`
+            : "You have no memory..."}
+        </LoadingText>
       </TextContainer>
     </Screen>
   );
@@ -105,7 +112,7 @@ const LoadingText = styled.div`
       width: 0;
     }
     to {
-      width: 235px;
+      width: 285px;
     }
   }
 
