@@ -13,16 +13,16 @@ const MainPage = () => {
 
   useEffect(async () => {
     if (isLoggedIn) {
-      if (!isLoggedIn) {
-        return;
-      }
+      try {
+        const { data } = await axios.get(`/users/${user.id}/videos`);
 
-      const { data } = await axios.get(`/users/${user.id}/videos`);
+        if (data.videos) {
+          const { videos } = data;
 
-      if (data.videos) {
-        const { videos } = data;
-
-        dispatch(videoActions.setVideos({ videos }));
+          dispatch(videoActions.setVideos({ videos }));
+        }
+      } catch (error) {
+        console.log(error);
       }
     }
   }, [isLoggedIn]);

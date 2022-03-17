@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import GoogleButton from "react-google-button";
 import styled from "styled-components";
@@ -16,7 +16,13 @@ const LoginPage = () => {
 
   const imageRef = useRef();
 
+  const { isLoggedIn } = useSelector(state => state.user);
+
   const [message, setMessage] = useState();
+
+  if (isLoggedIn) {
+    navigate("/");
+  }
 
   const handleLoginClick = async () => {
     const userInfo = await signInWithGoogle();
