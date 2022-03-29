@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import GoogleButton from "react-google-button";
 import styled from "styled-components";
 
@@ -13,16 +13,12 @@ import Message from "../Common/Message";
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { token } = useParams();
 
   const imageRef = useRef();
 
   const { isLoggedIn } = useSelector(state => state.user);
-
   const [message, setMessage] = useState();
-
-  if (isLoggedIn) {
-    navigate("/");
-  }
 
   const handleLoginClick = async () => {
     const userInfo = await signInWithGoogle();
@@ -62,6 +58,20 @@ const LoginPage = () => {
     dispatch(userActions.updateUser(currentUser));
     navigate("/");
   };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+
+    if (!token) {
+      return;
+    }
+
+    localStorage.setItem("accessToken", token);
+    localStorage.setItem("refreshToken", token);
+    navigate("/");
+  });
 
   return (
     <Section>

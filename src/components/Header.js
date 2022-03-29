@@ -9,6 +9,7 @@ import { userActions } from "../features/userSlice";
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const user = useSelector(state => state.user);
 
   const getAutoLogin = useCallback(async () => {
@@ -59,13 +60,17 @@ const Header = () => {
     navigate(`/${path}`);
   };
 
-  const handleNavButtonClick = event => {
-    const path = event.currentTarget.id;
+  const handleLoginButtonClick = () => {
+    window.location.href = process.env.REACT_APP_LOGIN_SERVER_RENDERING;
+  };
 
+  const handleNavButtonClick = event => {
     if (!user.isLoggedIn) {
-      navigate("/login");
+      window.location.href = process.env.REACT_APP_LOGIN_SERVER_RENDERING;
       return;
     }
+
+    const path = event.currentTarget.id;
 
     navigate(`/${path}`);
   };
@@ -110,7 +115,7 @@ const Header = () => {
           {user.isLoggedIn ? (
             <SignButton onClick={handleLogoutButtonClick}>Log out</SignButton>
           ) : (
-            <SignButton id="login" onClick={handleButtonClick}>
+            <SignButton id="login" onClick={handleLoginButtonClick}>
               Log in
             </SignButton>
           )}
@@ -168,7 +173,7 @@ const NavButton = styled.button`
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   background-color: ${({ theme }) => theme.colors.lightBlue};
   color: ${({ theme }) => theme.colors.white};
-  font-size: ${({ theme }) => theme.fontSizes.base};
+  font-size: 0.7em;
   font-weight: 600;
 `;
 

@@ -10,7 +10,6 @@ import LoginPage from "../components/pages/LoginPage";
 import RecorderPage from "../components/pages/RecorderPage";
 import VideoModal from "../components/VideoModal";
 import MyVideosPage from "../components/pages/MyVideosPage";
-import BlackHoleEffect from "../components/Three/BlackHole/BlackHoleEffect";
 import VideoDetailPage from "../components/pages/VideoDetailPage";
 
 const App = () => {
@@ -20,7 +19,7 @@ const App = () => {
       <Header />
       <Routes>
         <Route path="/" element={<MainPage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/login/:token" element={<LoginPage />} />
         <Route path="/recorder" element={<RecorderPage />} />
         <Route
           path="/my-videos/:userId/detail/:videoId"
@@ -37,7 +36,6 @@ const App = () => {
         >
           <Route path=":userId/:videoId" element={<VideoModal />} />
         </Route>
-        <Route path="/test" element={<BlackHoleEffect />} />
       </Routes>
     </ThemeProvider>
   );
