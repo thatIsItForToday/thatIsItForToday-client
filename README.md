@@ -2,7 +2,7 @@
 
 배포 URL: [https://that-is-it-for-today.com](https://that-is-it-for-today.com)
 
-프로젝트 기간: 2022.2.27 ~ 2022.3.13 (기획 1주, 개발 2주)
+프로젝트 기간: 2022.2.20 ~ 2022.3.13 (기획 1주, 개발 2주)
 
 `Description`
 
@@ -67,7 +67,7 @@
 ### **Firebase authentication + jwt**
 
 - Firebase authentication 구글 로그인
-- JSON Web Token Authentication 사용
+- JSON Web Token Authentication
 
 <br>
 
