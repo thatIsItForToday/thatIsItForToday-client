@@ -18,33 +18,30 @@ const GifSlider = ({ videos }) => {
   const { user } = useSelector(state => state.user);
   const { videosByDate } = useSelector(state => state.video);
 
-  let speed = 0;
-  let position = 0;
-  let rounded = 0;
-
   const handleGifClick = useCallback(
     event => {
       const index = event.currentTarget.id;
       const clickedVideo = videosByDate[index];
-
       const payload = { video: clickedVideo };
-      dispatch(videoActions.updateCurrentVideo(payload));
 
+      dispatch(videoActions.updateCurrentVideo(payload));
       navigate(`${user.id}/${clickedVideo._id}`);
     },
     [videosByDate, videos]
   );
 
   useEffect(() => {
-    window.addEventListener("wheel", event => {
-      speed = event.deltaY * 0.002;
-    });
-  }, []);
-
-  useEffect(() => {
     const objs = Array(videosByDate.length).fill({ distance: 0 });
 
-    const requestAnimationFrame = () => {
+    let speed = 0;
+    let position = 0;
+    let rounded = 0;
+
+    const handleMouseWheel = event => {
+      speed = event.deltaY * 0.002;
+    };
+
+    const requestGifAnimationFrame = () => {
       const $gifCards = [...document.querySelectorAll(".card")];
 
       position += speed;
@@ -62,13 +59,22 @@ const GifSlider = ({ videos }) => {
       const diff = rounded - position;
 
       position += Math.sign(diff) * Math.abs(diff) ** 0.7 * 0.02;
+      wrapperRef.current.style.transform = `translateX(${-position * 38}vw)`;
 
-      wrapperRef.current.style.transform = `translate(${-position * 735}px, 0)`;
+      const animationId = window.requestAnimationFrame(
+        requestGifAnimationFrame
+      );
 
-      window.requestAnimationFrame(requestAnimationFrame);
+      return animationId;
     };
 
-    requestAnimationFrame();
+    const scrollAnimationId = requestGifAnimationFrame();
+    window.addEventListener("wheel", handleMouseWheel);
+
+    return () => {
+      window.cancelAnimationFrame(scrollAnimationId);
+      window.removeEventListener("wheel", handleMouseWheel);
+    };
   }, []);
 
   useEffect(async () => {
