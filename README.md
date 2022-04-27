@@ -58,7 +58,7 @@
 ### **AWS VOD 스트리밍 서비스**
 
 - AWS S3, Lambda, Elemental MediaConvert, CloudFront를 사용하여 VOD 스트리밍 서비스 구축
-- AWS S3(소스용 버킷) 파일 업로드 -> AWS Lambda, Elemental MediaConvert을 통한 스트리밍용 파일 변환 작업(.mp4 -> hls 파일) -> AWS S3(스트리밍용 버킷) 업로드 -> AWS CloudFront 배포 통한 cdn 구축
+- AWS S3(소스용 버킷) 파일 업로드 -> AWS Lambda, Elemental MediaConvert을 통한 스트리밍용 파일 변환 작업(.mp4 -> HLS 형식 파일) -> AWS S3(스트리밍용 버킷) 업로드 -> AWS CloudFront 배포 통한 CDN 구축
 
 ### **Gif 스크롤 애니메이션**
 
@@ -140,7 +140,7 @@ $ npm run server-mac
 gif 파일변환 작업방식을 놓고 고민하다 웹 어셈블리를 사용하여 클라이언트 브라우저상에서 변환 작업을 할 수 있도록 구현했습니다. 그 이유는 크게 두 가지 입니다.
 
 - 파일의 용량이 대체로 큰 영상들을 다룬다는 점을 고려할 때, Node.js 운영서버에서 buffer와 stream을 사용하여 gif 파일변환 작업을 진행하도록 구현한다면 운영서버의 메모리 사용량이 지나치게 많아지는 부담이 있기 때문입니다. 이는 좋지 않은 사용자 경험으로 연결될 뿐 아니라 서버운영 비용에도 부담을 줄 수 있다고 판단했습니다.
-- 웹 어셈블리를 사용하면 low-level 언어로 작성된 프로그램(이 프로젝트에서는 FFmpeg 라이브러리)을 웹 브라우저에서 바로 실행함으로써 높은 퍼포먼스를 경험할 수 가져올 수 있을 뿐 아니라 서버와의 통신도 최소화할 수 있기 때문에 장점이 크다고 판단했습니다.
+- 웹 어셈블리를 사용하면 low-level 언어로 작성된 프로그램(이 프로젝트에서는 FFmpeg 라이브러리)을 웹 브라우저에서 바로 실행함으로써 높은 퍼포먼스를 가져올 수 있을 뿐 아니라 서버와의 통신도 최소화할 수 있기 때문에 장점이 크다고 판단했습니다.
 
 웹 어셈블리를 사용할 시 높은 퍼포먼스를 가져올 수 있는 큰 이유는 SharedArrayBuffer 데이터 형태를 사용하기 때문입니다. 기본적으로 대부분의 브라우저에서 보안상의 이유로 사용 설정이 막혀있기 때문에 COOP(cross-origin-opener-policy)와 COEP(cross-origin-embeder-policy) 값을 응답 헤더에 설정해줌으로써 웹 페이지를 사용할 수 있는 환경인 cross-origin-isolated page로 만들어 주었습니다.
 

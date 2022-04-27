@@ -248,8 +248,8 @@ const Text = styled.h2`
 `;
 
 const ButtonBox = styled.div`
-  ${({ theme }) => theme.container.flexSpaceBetween};
-  width: 50%;
+  ${({ theme }) => theme.container.flexEnd};
+  width: 100%;
   margin-top: 2%;
 `;
 

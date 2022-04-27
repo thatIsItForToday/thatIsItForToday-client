@@ -59,7 +59,7 @@ const GifSlider = ({ videos }) => {
       const diff = rounded - position;
 
       position += Math.sign(diff) * Math.abs(diff) ** 0.7 * 0.02;
-      wrapperRef.current.style.transform = `translateX(${-position * 38}vw)`;
+      wrapperRef.current.style.transform = `translateX(${-position * 38.6}vw)`;
 
       const animationId = window.requestAnimationFrame(
         requestGifAnimationFrame
