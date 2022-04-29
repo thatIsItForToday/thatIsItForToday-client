@@ -21,8 +21,8 @@ const VideoDetailPage = () => {
 
   const date = parseISO(currentVideo.createdAt);
 
-  const handleBackToScrollButtonClick = () => {
-    navigate("/my-videos");
+  const handleLinkButtonClick = event => {
+    navigate(event.target.dataset.link);
   };
 
   const handleDeleteButtonClick = async () => {
@@ -41,10 +41,14 @@ const VideoDetailPage = () => {
           };
 
           dispatch(videoActions.setVideos({ videos }));
-          dispatch(videoActions.updateCurrentVideo(payload));
-          navigate(
-            `/my-videos/${user.id}/detail/${videos[videos.length - 1]._id}`
-          );
+
+          if (videos.length) {
+            dispatch(videoActions.updateCurrentVideo(payload));
+
+            navigate(
+              `/my-videos/${user.id}/detail/${videos[videos.length - 1]._id}`
+            );
+          }
         }
       }
     } catch (error) {
@@ -112,51 +116,64 @@ const VideoDetailPage = () => {
 
   return (
     <Section>
-      <Container>
-        <VideoPlayer video={currentVideo} />
-        <Text>{`Memory on ${getRecordedDate(date)}`}</Text>
-        <ButtonBox>
-          <Button
-            style={{ backgroundColor: "red" }}
-            onClick={handleDeleteButtonClick}
-          >
-            Delete
-          </Button>
-          <Button onClick={handleGifDownloadButtonClick}>Gif Download</Button>
-          <Button onClick={handleVideoDownloadButtonClick}>
-            Video Download
-          </Button>
-          <Button onClick={handleBackToScrollButtonClick}>
-            Back to Scroll
-          </Button>
-        </ButtonBox>
-      </Container>
-      <RightSideContainer>
-        {videosByDate.length &&
-          videosByDate.map(video => {
-            const date = parseISO(video.createdAt);
-
-            return (
-              <VideoItemContainer
-                key={video._id}
-                id={video._id}
-                onClick={handleVideoItemClick}
+      {videosByDate.length ? (
+        <>
+          <Container>
+            <VideoPlayer video={currentVideo} />
+            <Heading>{`Memory on ${getRecordedDate(date)}`}</Heading>
+            <ButtonBox>
+              <Button
+                style={{ backgroundColor: "red" }}
+                onClick={handleDeleteButtonClick}
               >
-                <ImgBox>
-                  <Img
-                    src={video.thumbnailURL}
-                    alt="thumb"
-                    crossOrigin="true"
-                  />
-                </ImgBox>
-                <DescriptionBox>
-                  <Description>{getRecordedDate(date)}</Description>
-                  <Description>{video.runTime}</Description>
-                </DescriptionBox>
-              </VideoItemContainer>
-            );
-          })}
-      </RightSideContainer>
+                Delete
+              </Button>
+              <Button onClick={handleGifDownloadButtonClick}>
+                Gif Download
+              </Button>
+              <Button onClick={handleVideoDownloadButtonClick}>
+                Video Download
+              </Button>
+              <Button data-link="/my-videos" onClick={handleLinkButtonClick}>
+                Back to Scroll
+              </Button>
+            </ButtonBox>
+          </Container>
+          <RightSideContainer>
+            {videosByDate.length &&
+              videosByDate.map(video => {
+                const date = parseISO(video.createdAt);
+
+                return (
+                  <VideoItemContainer
+                    key={video._id}
+                    id={video._id}
+                    onClick={handleVideoItemClick}
+                  >
+                    <ImgBox>
+                      <Img
+                        src={video.thumbnailURL}
+                        alt="thumb"
+                        crossOrigin="true"
+                      />
+                    </ImgBox>
+                    <DescriptionBox>
+                      <Description>{getRecordedDate(date)}</Description>
+                      <Description>{video.runTime}</Description>
+                    </DescriptionBox>
+                  </VideoItemContainer>
+                );
+              })}
+          </RightSideContainer>
+        </>
+      ) : (
+        <Notification>
+          <Text>There is no record.</Text>
+          <Button data-link="/recorder" onClick={handleLinkButtonClick}>
+            Go to Record Page
+          </Button>
+        </Notification>
+      )}
     </Section>
   );
 };
@@ -239,7 +256,7 @@ const Description = styled.p`
   font-weight: 600;
 `;
 
-const Text = styled.h2`
+const Heading = styled.h2`
   margin-top: 2%;
   text-align: center;
   font-family: "ABeeZee";
@@ -269,6 +286,19 @@ const Button = styled.button`
     cursor: pointer;
     transform: scale(1.02);
   }
+`;
+
+const Notification = styled.div`
+  ${({ theme }) => theme.container.flexCenterColumn};
+  width: 100%;
+  height: 100%;
+  font-family: "ABeeZee";
+  font-weight: 500;
+  font-size: 1rem;
+`;
+
+const Text = styled.p`
+  margin-left: 3%;
 `;
 
 export default VideoDetailPage;
