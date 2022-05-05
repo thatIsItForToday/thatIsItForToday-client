@@ -225,8 +225,8 @@ const Video = styled.video`
 `;
 
 const LoadingIndicator = styled.img`
-  width: "4em";
-  height: "4em";
+  width: "4rem";
+  height: "4rem";
 `;
 
 const Button = styled.button`

@@ -1,9 +1,10 @@
 import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
-import axios from "../../config/axiosInstance";
-import { videoActions } from "../../features/videoSlice";
+import { selectUser } from "../../features/userSlice";
+import { selectVideo, uploadUserVideo } from "../../features/videoSlice";
 import {
   getSignedURL,
   getThumbnailURL,
@@ -16,15 +17,16 @@ import Recorder from "../Recorder";
 
 const RecorderPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const { user } = useSelector(state => state.user);
-  const { recorder } = useSelector(state => state.video);
+  const { user } = useSelector(selectUser);
+  const { recorder } = useSelector(selectVideo);
 
   const [gif, setGif] = useState("");
   const [videoBlob, setVideoBlob] = useState("");
   const [gifBlob, setGifBlob] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const [isUploadSuccess, setIsUploadSuccess] = useState(false);
+  const [isUploadComplete, setIsUploadComplete] = useState(false);
 
   const handleUploadRecordedClick = useCallback(async () => {
     setIsUploading(true);
@@ -37,6 +39,7 @@ const RecorderPage = () => {
 
       const { uploadURL: videoUploadURL, Key } = videoUploadData;
       const { uploadURL: gifUploadURL } = gifUploadData;
+
       const videoName = Key.split(".")[0];
 
       await Promise.all([
@@ -44,27 +47,21 @@ const RecorderPage = () => {
         uploadToAWSS3(gifUploadURL, gifBlob, "image/gif"),
       ]);
 
-      const uploadedURLs = {
-        gifURL: gifUploadURL.split("?")[0],
-        videoURL: videoUploadURL.split("?")[0],
-        videoStreamingURL: getVideoStreamingURL(videoName),
-        thumbnailURL: getThumbnailURL(videoName),
-        runTime: recorder.runTime,
+      const uploadedVideoInfo = {
+        userId: user.id,
+        video: {
+          gifURL: gifUploadURL.split("?")[0],
+          videoURL: videoUploadURL.split("?")[0],
+          videoStreamingURL: getVideoStreamingURL(videoName),
+          thumbnailURL: getThumbnailURL(videoName),
+          runTime: recorder.runTime,
+        },
       };
 
-      await axios.post(`/users/${user.id}/video`, uploadedURLs);
-
-      const { data } = await axios.get(`/users/${user.id}/videos`);
-
-      if (data.videos) {
-        const { videos } = data;
-
-        dispatch(videoActions.setVideos({ videos }));
-      }
+      dispatch(uploadUserVideo(uploadedVideoInfo));
 
       setIsUploading(false);
-      setIsUploadSuccess(true);
-      dispatch(videoActions.resetRecorder());
+      setIsUploadComplete(true);
     } catch (error) {
       console.log(error);
     }
@@ -74,6 +71,7 @@ const RecorderPage = () => {
     setGif("");
     setVideoBlob("");
     setGifBlob("");
+    setIsUploadComplete(false);
   }, []);
 
   return (
@@ -81,19 +79,33 @@ const RecorderPage = () => {
       {gif ? (
         <Container className={gif ? "show" : "no-show"}>
           <Text>{`Your memory on ${getToday()}`}</Text>
-          <Gif src={gif} />
+          <Gif src={gif} alt="gif-image" />
           <ButtonContainer>
             {isUploading && (
               <Message message="Your memory is being uploaded.." />
             )}
-            {!isUploading && !isUploadSuccess && (
+            {!isUploading && !isUploadComplete && (
               <>
                 <Button onClick={handleUploadRecordedClick}>Upload</Button>
                 <Button onClick={handleReTakeButtonClick}>Re-take</Button>
               </>
             )}
           </ButtonContainer>
-          {isUploadSuccess && <Message message="Uploaded successfully!" />}
+          {isUploadComplete && (
+            <>
+              <Message message="Uploaded successfully!" />
+              <ButtonContainer>
+                <Button onClick={handleReTakeButtonClick}>Record More</Button>
+                <Button
+                  onClick={() => {
+                    navigate("/my-videos");
+                  }}
+                >
+                  Check My Videos
+                </Button>
+              </ButtonContainer>
+            </>
+          )}
         </Container>
       ) : (
         <Recorder

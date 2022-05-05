@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { parseISO } from "date-fns";
 import styled from "styled-components";
 
+import { selectUser } from "../features/userSlice";
+import { selectVideo } from "../features/videoSlice";
 import { getRecordedDate } from "../utils/dateUtils";
 import VideoPlayer from "./VideoPlayer";
 import Modal from "./Common/Modal";
@@ -11,8 +13,8 @@ import Modal from "./Common/Modal";
 const VideoModal = () => {
   const navigate = useNavigate();
 
-  const { user } = useSelector(state => state.user);
-  const { currentVideo } = useSelector(state => state.video);
+  const { user } = useSelector(selectUser);
+  const { currentVideo } = useSelector(selectVideo);
 
   const date = parseISO(currentVideo.createdAt);
 

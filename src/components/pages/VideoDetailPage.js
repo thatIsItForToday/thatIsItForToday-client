@@ -4,17 +4,21 @@ import { useNavigate } from "react-router-dom";
 import { parseISO } from "date-fns";
 import styled from "styled-components";
 
-import axios from "../../config/axiosInstance";
+import { selectUser } from "../../features/userSlice";
+import {
+  deleteUserVideo,
+  selectVideo,
+  videoActions,
+} from "../../features/videoSlice";
 import { getRecordedDate } from "../../utils/dateUtils";
-import { videoActions } from "../../features/videoSlice";
 import VideoPlayer from "../VideoPlayer";
 
 const VideoDetailPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { user } = useSelector(state => state.user);
-  const { videosByDate, currentVideo } = useSelector(state => state.video);
+  const { user } = useSelector(selectUser);
+  const { videosByDate, currentVideo } = useSelector(selectVideo);
 
   const [gifDownloadURL, setGifDownloadURL] = useState(null);
   const [videoDownloadURL, setVideoDownloadURL] = useState(null);
@@ -27,29 +31,25 @@ const VideoDetailPage = () => {
 
   const handleDeleteButtonClick = async () => {
     try {
-      const { data } = await axios.delete(
-        `/users/${user.id}/videos/${currentVideo._id}`
+      const deleteInfo = {
+        userId: user.id,
+        videoId: currentVideo._id,
+      };
+
+      dispatch(deleteUserVideo(deleteInfo));
+
+      const remainVideos = videosByDate.filter(
+        video => video._id !== currentVideo._id
       );
 
-      if (data.result === "ok") {
-        const { data } = await axios.get(`/users/${user.id}/videos`);
+      if (remainVideos.length) {
+        const lastVideo = remainVideos[remainVideos.length - 1];
+        const payload = {
+          video: lastVideo,
+        };
 
-        if (data.videos) {
-          const { videos } = data;
-          const payload = {
-            video: videos[videos.length - 1],
-          };
-
-          dispatch(videoActions.setVideos({ videos }));
-
-          if (videos.length) {
-            dispatch(videoActions.updateCurrentVideo(payload));
-
-            navigate(
-              `/my-videos/${user.id}/detail/${videos[videos.length - 1]._id}`
-            );
-          }
-        }
+        dispatch(videoActions.updateCurrentVideo(payload));
+        navigate(`/my-videos/${user.id}/detail/${lastVideo._id}`);
       }
     } catch (error) {
       console.log(error);

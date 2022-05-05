@@ -1,58 +1,19 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
-import axios from "../config/axiosInstance";
-import { userActions } from "../features/userSlice";
+import {
+  getAutoLoginAndUpdate,
+  putLogoutUser,
+  selectUser,
+} from "../features/userSlice";
 
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const user = useSelector(state => state.user);
-
-  const getAutoLogin = useCallback(async () => {
-    const { data } = await axios.get("/auth/login", {
-      headers: {
-        authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    });
-
-    if (data.isInvalidToken) {
-      return true;
-    }
-
-    if (data.user) {
-      const { _id: id, email, displayName } = data.user;
-      const currentUser = {
-        id,
-        email,
-        displayName,
-      };
-
-      dispatch(userActions.updateUser(currentUser));
-    }
-  }, []);
-
-  const postNewAccessToken = useCallback(async () => {
-    const { data } = await axios.post(
-      "/auth/token",
-      {},
-      {
-        headers: {
-          authorization: `Bearer ${localStorage.getItem("refreshToken")}`,
-        },
-      }
-    );
-
-    if (data.accessToken) {
-      const newToken = data.accessToken;
-
-      localStorage.setItem("accessToken", newToken);
-      getAutoLogin();
-    }
-  }, []);
+  const { isLoggedIn } = useSelector(selectUser);
 
   const handleButtonClick = event => {
     const path = event.currentTarget.id;
@@ -65,7 +26,7 @@ const Header = () => {
   };
 
   const handleNavButtonClick = event => {
-    if (!user.isLoggedIn) {
+    if (!isLoggedIn) {
       window.location.href = process.env.REACT_APP_LOGIN_SERVER_RENDERING;
       return;
     }
@@ -76,24 +37,14 @@ const Header = () => {
   };
 
   const handleLogoutButtonClick = async () => {
-    const { data } = await axios.put("/auth/logout", {
-      email: user.email,
-    });
+    dispatch(putLogoutUser());
 
-    if (data.result === "ok") {
-      dispatch(userActions.deleteUser());
-
-      navigate("/");
-    }
+    navigate("/");
   };
 
   useEffect(async () => {
-    if (!user.isLoggedIn) {
-      const isAccessTokenExpired = await getAutoLogin();
-
-      if (isAccessTokenExpired) {
-        postNewAccessToken();
-      }
+    if (!isLoggedIn && localStorage.getItem("accessToken")) {
+      dispatch(getAutoLoginAndUpdate());
     }
   }, []);
 
@@ -112,7 +63,7 @@ const Header = () => {
           </NavButton>
         </NavBox>
         <LoginBox>
-          {user.isLoggedIn ? (
+          {isLoggedIn ? (
             <SignButton onClick={handleLogoutButtonClick}>Log out</SignButton>
           ) : (
             <SignButton id="login" onClick={handleLoginButtonClick}>
@@ -166,19 +117,19 @@ const Logo = styled.button`
 
 const NavButton = styled.button`
   ${({ theme }) => theme.container.flexCenter};
-  width: 23%;
+  width: fit-content;
   padding: 16px ${({ theme }) => theme.spacing.xxxl};
   margin: ${({ theme }) => theme.spacing.xxl};
   border-radius: 0.5rem;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   background-color: ${({ theme }) => theme.colors.lightBlue};
   color: ${({ theme }) => theme.colors.white};
-  font-size: 0.7em;
+  font-size: 0.8em;
   font-weight: 600;
 `;
 
 const SignButton = styled(NavButton)`
-  width: 60%;
+  width: max-content;
   background-color: ${({ theme }) => theme.colors.blue};
 `;
 

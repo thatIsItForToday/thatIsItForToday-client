@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
-import axios from "../../config/axiosInstance";
-import { videoActions } from "../../features/videoSlice";
+import { fetchUserVideos, selectVideo } from "../../features/videoSlice";
+import { selectUser } from "../../features/userSlice";
 import { IMAGE_URL } from "../../config/constants";
 import CanvasContainer from "../Three/CanvasContainer";
 import Dimension from "../Three/Dimension";
@@ -15,13 +15,13 @@ const MyVideosPage = () => {
 
   const instructionRef = useRef();
 
-  const { user, isLoggedIn } = useSelector(state => state.user);
-  const { videosByDate } = useSelector(state => state.video);
+  const { user, isLoggedIn } = useSelector(selectUser);
+  const { videosByDate } = useSelector(selectVideo);
 
-  const [isLoadingEnd, setIsLoadingEnd] = useState(false);
+  const [isLoadingScreenEnd, setIsLoadingScreenEnd] = useState(false);
 
   useEffect(() => {
-    if (!isLoadingEnd) {
+    if (!isLoadingScreenEnd) {
       return;
     }
 
@@ -34,27 +34,21 @@ const MyVideosPage = () => {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [isLoadingEnd]);
+  }, [isLoadingScreenEnd]);
 
   useEffect(async () => {
     if (!isLoggedIn) {
       return;
     }
 
-    const { data } = await axios.get(`/users/${user.id}/videos`);
-
-    if (data.videos) {
-      const { videos } = data;
-
-      dispatch(videoActions.setVideos({ videos }));
-    }
+    dispatch(fetchUserVideos(user.id));
   }, [isLoggedIn]);
 
   return (
     <Section>
-      <LoadingScreen onEnd={setIsLoadingEnd} />
+      <LoadingScreen onEnd={setIsLoadingScreenEnd} />
       <Container>
-        {isLoadingEnd && (
+        {setIsLoadingScreenEnd && (
           <InstructionBox ref={instructionRef}>
             <Img
               src={IMAGE_URL.MOUSE_SCROLL}

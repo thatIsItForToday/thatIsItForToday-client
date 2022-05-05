@@ -4,8 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { parseISO } from "date-fns";
 import styled from "styled-components";
 
-import axios from "../config/axiosInstance";
-import { videoActions } from "../features/videoSlice";
+import {
+  fetchUserVideos,
+  selectVideo,
+  videoActions,
+} from "../features/videoSlice";
+import { selectUser } from "../features/userSlice";
 import { getRecordedDate } from "../utils/dateUtils";
 import Description from "./Description";
 
@@ -15,14 +19,17 @@ const GifSlider = ({ videos }) => {
 
   const wrapperRef = useRef();
 
-  const { user } = useSelector(state => state.user);
-  const { videosByDate } = useSelector(state => state.video);
+  const { user } = useSelector(selectUser);
+  const { videosByDate } = useSelector(selectVideo);
 
   const handleGifClick = useCallback(
     event => {
       const index = event.currentTarget.id;
       const clickedVideo = videosByDate[index];
-      const payload = { video: clickedVideo };
+
+      const payload = {
+        video: clickedVideo,
+      };
 
       dispatch(videoActions.updateCurrentVideo(payload));
       navigate(`${user.id}/${clickedVideo._id}`);
@@ -78,13 +85,7 @@ const GifSlider = ({ videos }) => {
   }, []);
 
   useEffect(async () => {
-    const { data } = await axios.get(`/users/${user.id}/videos`);
-
-    const payload = {
-      videos: data.videos,
-    };
-
-    dispatch(videoActions.setVideos(payload));
+    dispatch(fetchUserVideos(user.id));
   }, []);
 
   return (

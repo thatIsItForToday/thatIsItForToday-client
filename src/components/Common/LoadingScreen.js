@@ -2,11 +2,14 @@ import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 
+import { selectVideo } from "../../features/videoSlice";
+import { getNumbersOfMemoriesAsText } from "../../utils/textUtils";
+
 const LoadingScreen = ({ onEnd }) => {
   const loadingScreenRef = useRef();
   const loadingTextRef = useRef();
 
-  const { videosByDate } = useSelector(state => state.video);
+  const { videosByDate } = useSelector(selectVideo);
 
   useEffect(() => {
     loadingScreenRef.current.classList.add("loadingStart");
@@ -37,9 +40,7 @@ const LoadingScreen = ({ onEnd }) => {
     <Screen ref={loadingScreenRef}>
       <TextContainer>
         <LoadingText ref={loadingTextRef}>
-          {videosByDate.length
-            ? `You have ${videosByDate.length} memories.`
-            : "You have no memory..."}
+          {getNumbersOfMemoriesAsText(videosByDate.length)}
         </LoadingText>
       </TextContainer>
     </Screen>

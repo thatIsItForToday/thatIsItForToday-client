@@ -2,29 +2,21 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
-import axios from "../../config/axiosInstance";
+import { selectUser } from "../../features/userSlice";
+import { fetchUserVideos } from "../../features/videoSlice";
 import { IMAGE_URL } from "../../config/constants";
-import { videoActions } from "../../features/videoSlice";
 
 const MainPage = () => {
   const dispatch = useDispatch();
 
-  const { user, isLoggedIn } = useSelector(state => state.user);
+  const { user, isLoggedIn } = useSelector(selectUser);
 
   useEffect(async () => {
-    if (isLoggedIn) {
-      try {
-        const { data } = await axios.get(`/users/${user.id}/videos`);
-
-        if (data.videos) {
-          const { videos } = data;
-
-          dispatch(videoActions.setVideos({ videos }));
-        }
-      } catch (error) {
-        console.log(error);
-      }
+    if (!isLoggedIn) {
+      return;
     }
+
+    dispatch(fetchUserVideos(user.id));
   }, [isLoggedIn]);
 
   return (

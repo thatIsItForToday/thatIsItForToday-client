@@ -7,7 +7,11 @@ import styled from "styled-components";
 import axios from "../../config/axiosInstance";
 import signInWithGoogle from "../../config/firebase";
 import { IMAGE_URL, RESPONSE } from "../../config/constants";
-import { userActions } from "../../features/userSlice";
+import {
+  getAutoLoginAndUpdate,
+  selectUser,
+  userActions,
+} from "../../features/userSlice";
 import Message from "../Common/Message";
 
 const LoginPage = () => {
@@ -17,7 +21,8 @@ const LoginPage = () => {
 
   const imageRef = useRef();
 
-  const { isLoggedIn } = useSelector(state => state.user);
+  const { isLoggedIn } = useSelector(selectUser);
+
   const [message, setMessage] = useState();
 
   const handleLoginClick = async () => {
@@ -70,6 +75,7 @@ const LoginPage = () => {
 
     localStorage.setItem("accessToken", token);
     localStorage.setItem("refreshToken", token);
+    dispatch(getAutoLoginAndUpdate());
     navigate("/");
   });
 
